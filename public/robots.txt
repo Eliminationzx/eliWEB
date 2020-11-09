@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /login
+Disallow: /register
+Disallow: /ovsu_py
+
+Host: https://wow-h2h.com
+sitemap: https://wow-h2h.com/sitemap.xml

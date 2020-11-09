@@ -1,23 +1,16 @@
-/vendor/
-node_modules/
-npm-debug.log
-yarn-error.log
+.idea
+/public/sitemap.xml
+/public/image/*
+/vendor/*
 
-# Laravel 4 specific
-bootstrap/compiled.php
-app/storage/
+/public/catalog/*
+!/public/catalog/default/*
 
-# Laravel 5 & Lumen specific
-public/storage
-public/hot
+/resources/views/catalog/*
+!/resources/views/catalog/default/*
 
-# Laravel 5 & Lumen specific with changed public path
-public_html/storage
-public_html/hot
+/resources/views/layouts/catalog/*
+!/resources/views/layouts/catalog.blade.php
+!/resources/views/layouts/admin.blade.php
+!/resources/views/layouts/catalog/default/*
 
-storage/*.key
-.env
-Homestead.yaml
-Homestead.json
-/.vagrant
-.phpunit.result.cache
