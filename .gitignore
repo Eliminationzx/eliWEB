@@ -1,16 +1,1 @@
 .idea
-/public/sitemap.xml
-/public/image/*
-/vendor/*
-
-/public/catalog/*
-!/public/catalog/default/*
-
-/resources/views/catalog/*
-!/resources/views/catalog/default/*
-
-/resources/views/layouts/catalog/*
-!/resources/views/layouts/catalog.blade.php
-!/resources/views/layouts/admin.blade.php
-!/resources/views/layouts/catalog/default/*
-

@@ -1,0 +1,37 @@
+{
+    "name": "alexusmai/ruslug",
+    "description": "Laravel 5 RuSlug, Transliteration RU -> ENG",
+    "keywords": [
+        "laravel 5",
+        "slug",
+        "ru"
+    ],
+    "authors": [
+        {
+            "name": "alexusmai",
+            "email": "alexusmai@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "homepage": "https://github.com/alexusami/ruslug",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Alexusmai\\Ruslug\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Alexusmai\\Ruslug\\RuslugServiceProvider"
+            ],
+            "aliases": {
+                "Slug": "Alexusmai\\Ruslug\\RuslugFacade"
+            }
+        }
+    }
+}
