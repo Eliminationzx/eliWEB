@@ -60,8 +60,15 @@ class ResetPasswordController extends Controller
         $username = $user->name;
         $email = $user->email;
         
+        // old method
         $passhash = sha1(strtoupper($username).':'.strtoupper($pass));
         $battlepasshash = strtoupper(bin2hex(strrev(hex2bin(strtoupper(hash("sha256",strtoupper(hash("sha256", strtoupper($email)).":".strtoupper($pass)))))))); 
+        
+         // generate a random salt
+        $salt = random_bytes(32);
+        
+        // calculate verifier using this salt
+        $verifier = $this->CalculateSRP6Verifier($username, $pass, $salt);
               
 		$servers = explode(',', env('APP_GAME_SERVER_LIST'));
 		foreach ($servers as $server) {
@@ -73,7 +80,7 @@ class ResetPasswordController extends Controller
 				->update('UPDATE battlenet_accounts SET sha_pass_hash = ? WHERE id = ? AND email = ?', array($battlepasshash, $user['userid_'.$server], $email));
 		   }
 		   DB::connection('mysql_'.$server.'_auth')
-          ->update('UPDATE account SET sha_pass_hash = ?, v = ?, s = ? WHERE id = ? AND email = ?', array($passhash, 0, 0, $user['userid_'.$server], $email));		  
+          ->update('UPDATE account SET salt = ?, verifier = ?, sha_pass_hash = ?, WHERE id = ? AND email = ?', array($salt, $verifier, $passhash, $user['userid_'.$server], $email));		  
 		}
     }
 }
