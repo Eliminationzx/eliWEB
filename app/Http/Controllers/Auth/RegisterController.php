@@ -132,12 +132,47 @@ class RegisterController extends Controller
         return $userids;        
     }
     
+    public function CalculateSRP6Verifier($username, $password, $salt)
+    {
+        // algorithm constants
+        $g = gmp_init(7);
+        $N = gmp_init('894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7', 16);
+        
+        // calculate first hash
+        $h1 = sha1(strtoupper($username . ':' . $password), TRUE);
+        
+        // calculate second hash
+        $h2 = sha1($salt.$h1, TRUE);
+        
+        // convert to integer (little-endian)
+        $h2 = gmp_import($h2, 1, GMP_LSW_FIRST);
+        
+        // g^h2 mod N
+        $verifier = gmp_powm($g, $h2, $N);
+        
+        // convert back to a byte array (little-endian)
+        $verifier = gmp_export($verifier, 1, GMP_LSW_FIRST);
+        
+        // pad to 32 bytes, remember that zeros go on the end in little-endian!
+        $verifier = str_pad($verifier, 32, chr(0), STR_PAD_RIGHT);
+        
+        // done!
+        return $verifier;
+    }
+             
     public function registerGameAccounts($username, $email, $pass, $recruiter_ids) {  
         if ($this->isGameAccountUnique($username, $email))
             return false;
         
+        // old method
         $passaccount = sha1(strtoupper($username).':'.strtoupper($pass));                
         $battlepass = strtoupper(bin2hex(strrev(hex2bin(strtoupper(hash("sha256",strtoupper(hash("sha256", strtoupper($email)).":".strtoupper($pass))))))));
+        
+        // generate a random salt
+        $salt = random_bytes(32);
+        
+        // calculate verifier using this salt
+        $verifier = $this->CalculateSRP6Verifier($username, $pass, $salt);
 
 		$servers = explode(',', env('APP_GAME_SERVER_LIST'));
 		foreach ($servers as $server) {
@@ -153,11 +188,11 @@ class RegisterController extends Controller
 				$bnet_id = $this->getBnetIdByEmail($server, $email);   
 
 				DB::connection('mysql_'.$server.'_auth')
-				  ->insert('INSERT INTO account (username, sha_pass_hash, email, reg_mail, battlenet_account, recruiter) VALUES 
-					(?, ?, ?, ?, ?, ?)', array($username, $passaccount, $email, $email, $bnet_id, $recruiter_id));
+				  ->insert('INSERT INTO account (username, salt, verifier, sha_pass_hash, email, reg_mail, battlenet_account, recruiter) VALUES 
+					(?, ?, ?, ?, ?, ?, ?, ?)', array($username, $salt, $verifier, $passaccount, $email, $email, $bnet_id, $recruiter_id));
 			} else {
 				DB::connection('mysql_'.$server.'_auth')
-			  ->insert('INSERT INTO account (username, sha_pass_hash, email, reg_mail, recruiter) VALUES (?, ?, ?, ?, ?)', array($username, $passaccount, $email, $email, $recruiter_id)); 
+			  ->insert('INSERT INTO account (username, salt, verifier, sha_pass_hash, email, reg_mail, recruiter) VALUES (?, ?, ?, ?, ?, ?, ?)', array($username, $salt, $verifier, $passaccount, $email, $email, $recruiter_id)); 
 			}
 		}
         return true;
