@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use DB;
+use Crypt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -21,7 +22,7 @@ class SpinController extends Controller
     
     public function payforspin(Request $request) {
 
-        $token = base64_encode(env('OAUTH_SPIN_TOKEN'));
+        $token = Crypt::encrypt(env('OAUTH_SPIN_TOKEN'));
 
         $data = $request->user();
         
@@ -40,7 +41,7 @@ class SpinController extends Controller
     
     public function reward(Request $request) {
         
-        $spinToken = base64_decode($request->header('SpinToken'));   
+        $spinToken = Crypt::decrypt($request->header('SpinToken'));   
         if ($spinToken != env('OAUTH_SPIN_TOKEN')) {
             abort(403);
          }
