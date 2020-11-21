@@ -72,8 +72,8 @@ class AdminShopController extends Controller
             $shopitem->{'spell_3'} = $this->getspellinfo(empty($item_template) ? -1 : $item_template[0]['spellid_3']);
             $shopitem->{'spell_4'} = $this->getspellinfo(empty($item_template) ? -1 : $item_template[0]['spellid_4']);
             $shopitem->{'spell_5'} = $this->getspellinfo(empty($item_template) ? -1 : $item_template[0]['spellid_5']);
-            $shopitem->{'allowableclass'} = $this->getallowableclasses(empty($item_template) ? -1 : $item_template[0]['AllowableClass'], $server);
-            $shopitem->{'allowablerace'} = $this->getallowableraces(empty($item_template) ? -1 : $item_template[0]['AllowableRace'], $server);           
+            $shopitem->{'allowableclass'} = $this->getallowableclasses(empty($item_template) ? 0 : $item_template[0]['AllowableClass'], $server);
+            $shopitem->{'allowablerace'} = $this->getallowableraces(empty($item_template) ? 0 : $item_template[0]['AllowableRace'], $server);           
 
             if (!empty($item_template)) {
                 for ($i = 0; $i < $item_template[0]['StatsCount']; $i++) {                   
@@ -114,8 +114,8 @@ class AdminShopController extends Controller
                 $shopitem['spell_3'] = $this->getspellinfo(empty($item_template) ? -1 : $item_template[0]['spellid_3']);
                 $shopitem['spell_4'] = $this->getspellinfo(empty($item_template) ? -1 : $item_template[0]['spellid_4']);
                 $shopitem['spell_5'] = $this->getspellinfo(empty($item_template) ? -1 : $item_template[0]['spellid_5']);
-                $shopitem['allowableclass'] = $this->getallowableclasses(empty($item_template) ? -1 : $item_template[0]['AllowableClass'], $server);
-                $shopitem['allowablerace'] = $this->getallowableraces(empty($item_template) ? -1 : $item_template[0]['AllowableRace'], $server);
+                $shopitem['allowableclass'] = $this->getallowableclasses(empty($item_template) ? 0 : $item_template[0]['AllowableClass'], $server);
+                $shopitem['allowablerace'] = $this->getallowableraces(empty($item_template) ? 0 : $item_template[0]['AllowableRace'], $server);
                 
                 if (!empty($item_template)) {
                     for ($i = 0; $i < $item_template[0]['StatsCount']; $i++) {                   
@@ -133,7 +133,7 @@ class AdminShopController extends Controller
     public function getallowableraces($racemask, $server) {
         $races = Armory_races::where('servers', 'LIKE', '%'.$server.'%')->get()->toArray();
         $races = array_filter($races, function($element) use($racemask) {
-            return $racemask & (1 << $element['id'] - 1);
+            return $racemask AND ($racemask & (1 << $element['id'] - 1));
         });
         
         $racenames = null;
@@ -151,7 +151,7 @@ class AdminShopController extends Controller
     public function getallowableclasses($classmask, $server) {
         $classes = Armory_classes::where('servers', 'LIKE', '%'.$server.'%')->get()->toArray();
         $classes = array_filter($classes, function($element) use($classmask) {
-            return $classmask & (1 << $element['id'] - 1);
+            return $classmask AND ($classmask & (1 << $element['id'] - 1));
         });
         
         $allowableclasses = null;
@@ -171,10 +171,7 @@ class AdminShopController extends Controller
     }
     
     public function getitemdmgpersec($dmg_min, $dmg_max, $delay) {
-        if ($delay == 0 OR $dmg_max == 0 OR $dmg_min == 0)
-            return 0;
-        
-        return round(($dmg_max - $dmg_min + $dmg_min) / $this->getitemdelay($delay), 2);
+        return round((($dmg_max + $dmg_min) / 2) / $this->getitemdelay($delay), 2);
     }
     
     public function getitemdelay($delay) {
@@ -305,8 +302,8 @@ class AdminShopController extends Controller
             $shopitem->{'spell_3'} = $this->getspellinfo(empty($item_template) ? -1 : $item_template[0]['spellid_3']);
             $shopitem->{'spell_4'} = $this->getspellinfo(empty($item_template) ? -1 : $item_template[0]['spellid_4']);
             $shopitem->{'spell_5'} = $this->getspellinfo(empty($item_template) ? -1 : $item_template[0]['spellid_5']);
-            $shopitem->{'allowableclass'} = $this->getallowableclasses(empty($item_template) ? -1 : $item_template[0]['AllowableClass'], $server);
-            $shopitem->{'allowablerace'} = $this->getallowableraces(empty($item_template) ? -1 : $item_template[0]['AllowableRace'], $server);
+            $shopitem->{'allowableclass'} = $this->getallowableclasses(empty($item_template) ? 0 : $item_template[0]['AllowableClass'], $server);
+            $shopitem->{'allowablerace'} = $this->getallowableraces(empty($item_template) ? 0 : $item_template[0]['AllowableRace'], $server);
 
             if (!empty($item_template)) {
                 for ($i = 0; $i < $item_template[0]['StatsCount']; $i++) {
@@ -390,8 +387,8 @@ class AdminShopController extends Controller
             $shopitem['spell_3'] = $this->getspellinfo(empty($item_template) ? -1 : $item_template[0]['spellid_3']);
             $shopitem['spell_4'] = $this->getspellinfo(empty($item_template) ? -1 : $item_template[0]['spellid_4']);
             $shopitem['spell_5'] = $this->getspellinfo(empty($item_template) ? -1 : $item_template[0]['spellid_5']);
-            $shopitem['allowableclass'] = $this->getallowableclasses(empty($item_template) ? -1 : $item_template[0]['AllowableClass'], $server);
-            $shopitem['allowablerace'] = $this->getallowableraces(empty($item_template) ? -1 : $item_template[0]['AllowableRace'], $server);
+            $shopitem['allowableclass'] = $this->getallowableclasses(empty($item_template) ? 0 : $item_template[0]['AllowableClass'], $server);
+            $shopitem['allowablerace'] = $this->getallowableraces(empty($item_template) ? 0 : $item_template[0]['AllowableRace'], $server);
                     
             if (!empty($item_template)) {
                 for ($i = 0; $i < $item_template[0]['StatsCount']; $i++) {                   
@@ -542,8 +539,8 @@ class AdminShopController extends Controller
         $shopitem->{'spell_3'} = $this->getspellinfo(empty($item_template) ? -1 : $item_template[0]['spellid_3']);
         $shopitem->{'spell_4'} = $this->getspellinfo(empty($item_template) ? -1 : $item_template[0]['spellid_4']);
         $shopitem->{'spell_5'} = $this->getspellinfo(empty($item_template) ? -1 : $item_template[0]['spellid_5']);
-        $shopitem->{'allowableclass'} = $this->getallowableclasses(empty($item_template) ? -1 : $item_template[0]['AllowableClass'], $server);
-        $shopitem->{'allowablerace'} = $this->getallowableraces(empty($item_template) ? -1 : $item_template[0]['AllowableRace'], $server);
+        $shopitem->{'allowableclass'} = $this->getallowableclasses(empty($item_template) ? 0 : $item_template[0]['AllowableClass'], $server);
+        $shopitem->{'allowablerace'} = $this->getallowableraces(empty($item_template) ? 0 : $item_template[0]['AllowableRace'], $server);
 
         if (!empty($item_template)) {
             for ($i = 0; $i < $item_template[0]['StatsCount']; $i++) {                   
